@@ -29,7 +29,6 @@ type Sing struct {
 	hookServer *HookServer
 	router     adapter.Router
 	logFactory log.Factory
-	inbounds   map[string]adapter.Inbound
 }
 
 func init() {
@@ -38,7 +37,7 @@ func init() {
 
 func New(c *conf.CoreConfig) (vCore.Core, error) {
 	ctx := context.Background()
-	ctx = box.Context(ctx, include.InboundRegistry(), include.OutboundRegistry(), include.EndpointRegistry())
+	ctx = box.Context(ctx, include.InboundRegistry(), include.OutboundRegistry(), include.EndpointRegistry(), include.DNSTransportRegistry())
 	options := option.Options{}
 	if len(c.SingConfig.OriginalPath) != 0 {
 		data, err := os.ReadFile(c.SingConfig.OriginalPath)
@@ -72,7 +71,7 @@ func New(c *conf.CoreConfig) (vCore.Core, error) {
 	if err != nil {
 		return nil, err
 	}
-	hs := NewHookServer(c.SingConfig.EnableConnClear)
+	hs := NewHookServer()
 	b.Router().SetTracker(hs)
 	return &Sing{
 		ctx:        b.Router().GetCtx(),

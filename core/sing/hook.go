@@ -2,7 +2,7 @@ package sing
 
 import (
 	"context"
-	"io"
+	"fmt"
 	"net"
 	"sync"
 
@@ -20,47 +20,16 @@ import (
 var _ adapter.ConnectionTracker = (*HookServer)(nil)
 
 type HookServer struct {
-	EnableConnClear bool
-	counter         sync.Map
-	connClears      sync.Map
-}
-
-type ConnClear struct {
-	lock  sync.RWMutex
-	conns map[int]io.Closer
-}
-
-func (c *ConnClear) AddConn(cn io.Closer) (key int) {
-	c.lock.Lock()
-	defer c.lock.Unlock()
-	key = len(c.conns)
-	c.conns[key] = cn
-	return
-}
-
-func (c *ConnClear) DelConn(key int) {
-	c.lock.Lock()
-	defer c.lock.Unlock()
-	delete(c.conns, key)
-}
-
-func (c *ConnClear) ClearConn() {
-	c.lock.Lock()
-	defer c.lock.Unlock()
-	for _, c := range c.conns {
-		c.Close()
-	}
+	counter sync.Map
 }
 
 func (h *HookServer) ModeList() []string {
 	return nil
 }
 
-func NewHookServer(enableClear bool) *HookServer {
+func NewHookServer() *HookServer {
 	server := &HookServer{
-		EnableConnClear: enableClear,
-		counter:         sync.Map{},
-		connClears:      sync.Map{},
+		counter: sync.Map{},
 	}
 	return server
 }
@@ -79,14 +48,26 @@ func (h *HookServer) RoutedConnection(_ context.Context, conn net.Conn, m adapte
 	} else if b != nil {
 		conn = rate.NewConnRateLimiter(conn, b)
 	}
-	if h.EnableConnClear {
-		cc := &ConnClear{
-			conns: map[int]io.Closer{
-				0: conn,
-			},
+	if l != nil {
+		destStr := m.Destination.AddrString()
+		protocol := m.Destination.Network()
+		if l.CheckDomainRule(destStr) {
+			log.Error(fmt.Sprintf(
+				"User %s access domain %s reject by rule",
+				m.User,
+				destStr))
+			conn.Close()
+			return conn
 		}
-		if v, ok := h.connClears.LoadOrStore(m.Inbound+m.User, cc); ok {
-			cc = v.(*ConnClear)
+		if len(protocol) != 0 {
+			if l.CheckProtocolRule(protocol) {
+				log.Error(fmt.Sprintf(
+					"User %s access protocol %s reject by rule",
+					m.User,
+					protocol))
+				conn.Close()
+				return conn
+			}
 		}
 	}
 	if c, ok := h.counter.Load(m.Inbound); ok {
@@ -112,14 +93,26 @@ func (h *HookServer) RoutedPacketConnection(_ context.Context, conn N.PacketConn
 	} else if b != nil {
 		//conn = rate.NewPacketConnCounter(conn, b)
 	}
-	if h.EnableConnClear {
-		cc := &ConnClear{
-			conns: map[int]io.Closer{
-				0: conn,
-			},
+	if l != nil {
+		destStr := m.Destination.AddrString()
+		protocol := m.Destination.Network()
+		if l.CheckDomainRule(destStr) {
+			log.Error(fmt.Sprintf(
+				"User %s access domain %s reject by rule",
+				m.User,
+				destStr))
+			conn.Close()
+			return conn
 		}
-		if v, ok := h.connClears.LoadOrStore(m.Inbound+m.User, cc); ok {
-			cc = v.(*ConnClear)
+		if len(protocol) != 0 {
+			if l.CheckProtocolRule(protocol) {
+				log.Error(fmt.Sprintf(
+					"User %s access protocol %s reject by rule",
+					m.User,
+					protocol))
+				conn.Close()
+				return conn
+			}
 		}
 	}
 	if c, ok := h.counter.Load(m.Inbound); ok {
@@ -128,12 +121,5 @@ func (h *HookServer) RoutedPacketConnection(_ context.Context, conn N.PacketConn
 		c := counter.NewTrafficCounter()
 		h.counter.Store(m.Inbound, c)
 		return counter.NewPacketConnCounter(conn, c.GetCounter(m.User))
-	}
-}
-
-func (h *HookServer) ClearConn(inbound string, user string) {
-	if v, ok := h.connClears.Load(inbound + user); ok {
-		v.(*ConnClear).ClearConn()
-		h.connClears.Delete(inbound + user)
 	}
 }

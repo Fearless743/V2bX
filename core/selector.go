@@ -3,9 +3,10 @@ package core
 import (
 	"errors"
 	"fmt"
-	"github.com/hashicorp/go-multierror"
 	"strings"
 	"sync"
+
+	"github.com/hashicorp/go-multierror"
 
 	"github.com/InazumaV/V2bX/api/panel"
 	"github.com/InazumaV/V2bX/conf"
@@ -135,12 +136,12 @@ func (s *Selector) GetUserTraffic(tag, uuid string, reset bool) (up int64, down 
 	return t.(Core).GetUserTraffic(tag, uuid, reset)
 }
 
-func (s *Selector) DelUsers(users []panel.UserInfo, tag string) error {
+func (s *Selector) DelUsers(users []panel.UserInfo, tag string, info *panel.NodeInfo) error {
 	t, e := s.nodes.Load(tag)
 	if !e {
 		return errors.New("the node is not have")
 	}
-	return t.(Core).DelUsers(users, tag)
+	return t.(Core).DelUsers(users, tag, info)
 }
 
 func (s *Selector) Protocols() []string {

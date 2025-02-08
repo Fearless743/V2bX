@@ -27,7 +27,7 @@ func (c *Xray) GetUserManager(tag string) (proxy.UserManager, error) {
 	return userManager, nil
 }
 
-func (c *Xray) DelUsers(users []panel.UserInfo, tag string) error {
+func (c *Xray) DelUsers(users []panel.UserInfo, tag string, _ *panel.NodeInfo) error {
 	userManager, err := c.GetUserManager(tag)
 	if err != nil {
 		return fmt.Errorf("get user manager error: %s", err)

@@ -120,11 +120,11 @@ func (l *serverLogger) UDPError(addr net.Addr, uuid string, sessionId uint32, er
 func initLogger(logLevel string, logFormat string) (*zap.Logger, error) {
 	level, ok := logLevelMap[strings.ToLower(logLevel)]
 	if !ok {
-		return nil, fmt.Errorf(fmt.Sprintf("unsupported log level: %s\n", logLevel))
+		return nil, fmt.Errorf("unsupported log level: %s", logLevel)
 	}
 	enc, ok := logFormatMap[strings.ToLower(logFormat)]
 	if !ok {
-		return nil, fmt.Errorf(fmt.Sprintf("unsupported log format: %s\n", logFormat))
+		return nil, fmt.Errorf("unsupported log format: %s", logFormat)
 	}
 	c := zap.Config{
 		Level:             zap.NewAtomicLevelAt(level),
@@ -137,7 +137,7 @@ func initLogger(logLevel string, logFormat string) (*zap.Logger, error) {
 	}
 	logger, err := c.Build()
 	if err != nil {
-		return nil, fmt.Errorf(fmt.Sprintf("failed to initialize logger: %s\n", err))
+		return nil, fmt.Errorf("failed to initialize logger: %s", err)
 	}
 	return logger, nil
 }

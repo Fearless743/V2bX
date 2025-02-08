@@ -41,7 +41,7 @@ func (h *Hysteria2) AddUsers(p *vCore.AddUsersParams) (added int, err error) {
 	return len(p.Users), nil
 }
 
-func (h *Hysteria2) DelUsers(users []panel.UserInfo, tag string) error {
+func (h *Hysteria2) DelUsers(users []panel.UserInfo, tag string, _ *panel.NodeInfo) error {
 	var wg sync.WaitGroup
 	for _, user := range users {
 		wg.Add(1)

@@ -178,7 +178,7 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 	deleted, added := compareUserList(c.userList, newU)
 	if len(deleted) > 0 {
 		// have deleted users
-		err = c.server.DelUsers(deleted, c.tag)
+		err = c.server.DelUsers(deleted, c.tag, c.info)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"tag": c.tag,

@@ -23,27 +23,25 @@ func (b *Sing) AddUsers(p *core.AddUsersParams) (added int, err error) {
 		return 0, errors.New("the inbound not found")
 	}
 	switch p.NodeInfo.Type {
-	case "vmess", "vless":
-		if p.NodeInfo.Type == "vless" {
-			us := make([]option.VLESSUser, len(p.Users))
-			for i := range p.Users {
-				us[i] = option.VLESSUser{
-					Name: p.Users[i].Uuid,
-					Flow: p.VAllss.Flow,
-					UUID: p.Users[i].Uuid,
-				}
+	case "vless":
+		us := make([]option.VLESSUser, len(p.Users))
+		for i := range p.Users {
+			us[i] = option.VLESSUser{
+				Name: p.Users[i].Uuid,
+				Flow: p.VAllss.Flow,
+				UUID: p.Users[i].Uuid,
 			}
-			err = in.(*vless.Inbound).AddUsers(us)
-		} else {
-			us := make([]option.VMessUser, len(p.Users))
-			for i := range p.Users {
-				us[i] = option.VMessUser{
-					Name: p.Users[i].Uuid,
-					UUID: p.Users[i].Uuid,
-				}
-			}
-			err = in.(*vmess.Inbound).AddUsers(us)
 		}
+		err = in.(*vless.Inbound).AddUsers(us)
+	case "vmess":
+		us := make([]option.VMessUser, len(p.Users))
+		for i := range p.Users {
+			us[i] = option.VMessUser{
+				Name: p.Users[i].Uuid,
+				UUID: p.Users[i].Uuid,
+			}
+		}
+		err = in.(*vmess.Inbound).AddUsers(us)
 	case "shadowsocks":
 		us := make([]option.ShadowsocksUser, len(p.Users))
 		for i := range p.Users {
@@ -125,10 +123,10 @@ type UserDeleter interface {
 	DelUsers(uuid []string) error
 }
 
-func (b *Sing) DelUsers(users []panel.UserInfo, tag string) error {
+func (b *Sing) DelUsers(users []panel.UserInfo, tag string, info *panel.NodeInfo) error {
 	var del UserDeleter
-	if i, ok := b.inbounds[tag]; ok {
-		switch i.Type() {
+	if i, found := b.box.Inbound().Get(tag); found {
+		switch info.Type {
 		case "vmess":
 			del = i.(*vmess.Inbound)
 		case "vless":
@@ -149,7 +147,6 @@ func (b *Sing) DelUsers(users []panel.UserInfo, tag string) error {
 	}
 	uuids := make([]string, len(users))
 	for i := range users {
-		b.hookServer.ClearConn(tag, users[i].Uuid)
 		uuids[i] = users[i].Uuid
 	}
 	err := del.DelUsers(uuids)

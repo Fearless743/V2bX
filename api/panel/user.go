@@ -63,10 +63,12 @@ func (c *Client) GetUserAlive() (map[int]int, error) {
 		Get(path)
 	if err != nil || r.StatusCode() >= 399 {
 		c.AliveMap.Alive = make(map[int]int)
+		return c.AliveMap.Alive, nil
 	}
 	if r == nil || r.RawResponse == nil {
 		fmt.Printf("received nil response or raw response")
 		c.AliveMap.Alive = make(map[int]int)
+		return c.AliveMap.Alive, nil
 	}
 	defer r.RawResponse.Body.Close()
 	if err := json.Unmarshal(r.Body(), c.AliveMap); err != nil {
