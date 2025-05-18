@@ -354,6 +354,15 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 				TLS: &tls,
 			},
 		}
+	case "anytls":
+		in.Type = "anytls"
+		in.Options = &option.AnyTLSInboundOptions{
+			ListenOptions: listen,
+			InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{
+				TLS: &tls,
+			},
+		}
+
 	case "hysteria":
 		in.Type = "hysteria"
 		in.Options = &option.HysteriaInboundOptions{

@@ -97,6 +97,7 @@ func (b *Sing) Protocols() []string {
 		"shadowsocks",
 		"trojan",
 		"tuic",
+		"anytls",
 		"hysteria",
 		"hysteria2",
 	}

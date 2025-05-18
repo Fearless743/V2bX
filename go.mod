@@ -58,7 +58,7 @@ require (
 	github.com/alexbrainman/sspi v0.0.0-20231016080023-1a75b4708caa // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v1.63.72 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
-	github.com/anytls/sing-anytls v0.0.5 // indirect
+	github.com/anytls/sing-anytls v0.0.8 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.32.7 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.28.7 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.48 // indirect
@@ -330,4 +330,6 @@ require (
 
 //replace github.com/sagernet/sing-box v1.12.0 => ./sing-box_mod
 
-replace github.com/sagernet/sing-box v1.12.0 => github.com/wyx2685/sing-box_mod v1.12.0-test.0.20250308224353-2190e88e821f
+replace github.com/sagernet/sing-box v1.12.0 => github.com/Fearless743/sing-box_mod v1.12.0-anytls
+
+replace github.com/anytls/sing-anytls v0.0.8 => github.com/Fearless743/sing-anytls v0.0.9

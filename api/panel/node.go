@@ -33,6 +33,7 @@ type NodeInfo struct {
 	Shadowsocks *ShadowsocksNode
 	Trojan      *TrojanNode
 	Tuic        *TuicNode
+	AnyTls      *AnyTlsNode
 	Hysteria    *HysteriaNode
 	Hysteria2   *Hysteria2Node
 	Common      *CommonNode
@@ -105,6 +106,11 @@ type TuicNode struct {
 	CommonNode
 	CongestionControl string `json:"congestion_control"`
 	ZeroRTTHandshake  bool   `json:"zero_rtt_handshake"`
+}
+
+type AnyTlsNode struct {
+	CommonNode
+	PaddingScheme json.RawMessage `json:"padding_scheme,omitempty"`
 }
 
 type HysteriaNode struct {
@@ -218,6 +224,15 @@ func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
 		}
 		cm = &rsp.CommonNode
 		node.Tuic = rsp
+		node.Security = Tls
+	case "anytls":
+		rsp := &AnyTlsNode{}
+		err = json.Unmarshal(r.Body(), rsp)
+		if err != nil {
+			return nil, fmt.Errorf("decode anytls params error: %s", err)
+		}
+		cm = &rsp.CommonNode
+		node.AnyTls = rsp
 		node.Security = Tls
 	case "hysteria":
 		rsp := &HysteriaNode{}

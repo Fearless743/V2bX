@@ -8,6 +8,7 @@ import (
 	"github.com/InazumaV/V2bX/common/counter"
 	"github.com/InazumaV/V2bX/core"
 	"github.com/sagernet/sing-box/option"
+	"github.com/sagernet/sing-box/protocol/anytls"
 	"github.com/sagernet/sing-box/protocol/hysteria"
 	"github.com/sagernet/sing-box/protocol/hysteria2"
 	"github.com/sagernet/sing-box/protocol/shadowsocks"
@@ -79,6 +80,16 @@ func (b *Sing) AddUsers(p *core.AddUsersParams) (added int, err error) {
 			id[i] = p.Users[i].Id
 		}
 		err = in.(*tuic.Inbound).AddUsers(us, id)
+	case "anytls":
+		us := make([]option.AnyTLSUser, len(p.Users))
+		id := make([]int, len(p.Users))
+		for i := range p.Users {
+			us[i] = option.AnyTLSUser{
+				Name:     p.Users[i].Uuid,
+				Password: p.Users[i].Uuid,
+			}
+		}
+		err = in.(*anytls.Inbound).AddUsers(us, id)
 	case "hysteria":
 		us := make([]option.HysteriaUser, len(p.Users))
 		for i := range p.Users {
@@ -137,6 +148,8 @@ func (b *Sing) DelUsers(users []panel.UserInfo, tag string, info *panel.NodeInfo
 			del = i.(*trojan.Inbound)
 		case "tuic":
 			del = i.(*tuic.Inbound)
+		case "anytls":
+			del = i.(*anytls.Inbound)
 		case "hysteria":
 			del = i.(*hysteria.Inbound)
 		case "hysteria2":
