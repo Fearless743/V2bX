@@ -356,8 +356,17 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 		}
 	case "anytls":
 		in.Type = "anytls"
+		var paddingScheme badoption.Listable[string]
+		if info.AnyTls.PaddingScheme != nil && len(info.AnyTls.PaddingScheme) != 0 {
+			var arr []string
+			err := json.Unmarshal(info.AnyTls.PaddingScheme, &arr)
+			if err == nil {
+				paddingScheme = badoption.Listable[string](arr)
+			}
+		}
 		in.Options = &option.AnyTLSInboundOptions{
 			ListenOptions: listen,
+			PaddingScheme: paddingScheme,
 			InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{
 				TLS: &tls,
 			},
