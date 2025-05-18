@@ -48,7 +48,7 @@ A V2board node server based on multi core, modified from XrayR.
 ### 一键安装
 
 ```
-wget -N https://raw.githubusercontent.com/wyx2685/V2bX-script/master/install.sh && bash install.sh
+wget -N https://raw.githubusercontent.com/Fearless743/V2bX-script/master/install.sh && bash install.sh
 ```
 
 ### 手动安装
@@ -80,7 +80,8 @@ go build -v -o ./V2bX -tags "xray sing hysteria2 with_reality_server with_quic w
 * [Air-Universe](https://github.com/crossfw/Air-Universe)
 * [XrayR](https://github.com/XrayR/XrayR)
 * [sing-box](https://github.com/SagerNet/sing-box)
+* [V2bX](https://github.com/wyx2685/V2bX)
 
 ## Stars 增长记录
 
-[![Stargazers over time](https://starchart.cc/wyx2685/V2bX.svg)](https://starchart.cc/wyx2685/V2bX)
+[![Stargazers over time](https://starchart.cc/Fearless743/V2bX.svg)](https://starchart.cc/Fearless743/V2bX)
