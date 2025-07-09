@@ -111,6 +111,10 @@ type TuicNode struct {
 type AnyTlsNode struct {
 	CommonNode
 	PaddingScheme json.RawMessage `json:"padding_scheme,omitempty"`
+
+	Tls           int           `json:"tls"`
+	TlsSettings   TlsSettings   `json:"tls_settings"`
+	RealityConfig RealityConfig `json:"-"`
 }
 
 type HysteriaNode struct {
