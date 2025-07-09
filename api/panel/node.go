@@ -112,10 +112,16 @@ type AnyTlsNode struct {
 	CommonNode
 	PaddingScheme json.RawMessage `json:"padding_scheme,omitempty"`
 
+<<<<<<< HEAD
 	Tls             int           `json:"tls"`
 	TlsSettings     TlsSettings   `json:"tls_settings"`
 	TlsSettingsBack *TlsSettings  `json:"tlsSettings"`
 	RealityConfig   RealityConfig `json:"-"`
+=======
+	Tls           int           `json:"tls"`
+	TlsSettings   TlsSettings   `json:"tls_settings"`
+	RealityConfig RealityConfig `json:"-"`
+>>>>>>> be21a506c3a5b94d891c38b07431b500089093ca
 }
 
 type HysteriaNode struct {
