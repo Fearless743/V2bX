@@ -236,10 +236,6 @@ func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
 		if err != nil {
 			return nil, fmt.Errorf("decode anytls params error: %s", err)
 		}
-		if len(rsp.NetworkSettingsBack) > 0 {
-			rsp.NetworkSettings = rsp.NetworkSettingsBack
-			rsp.NetworkSettingsBack = nil
-		}
 		if rsp.TlsSettingsBack != nil {
 			rsp.TlsSettings = *rsp.TlsSettingsBack
 			rsp.TlsSettingsBack = nil
