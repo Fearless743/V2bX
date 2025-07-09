@@ -111,6 +111,11 @@ type TuicNode struct {
 type AnyTlsNode struct {
 	CommonNode
 	PaddingScheme json.RawMessage `json:"padding_scheme,omitempty"`
+
+	Tls             int           `json:"tls"`
+	TlsSettings     TlsSettings   `json:"tls_settings"`
+	TlsSettingsBack *TlsSettings  `json:"tlsSettings"`
+	RealityConfig   RealityConfig `json:"-"`
 }
 
 type HysteriaNode struct {
@@ -231,9 +236,17 @@ func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
 		if err != nil {
 			return nil, fmt.Errorf("decode anytls params error: %s", err)
 		}
+		if len(rsp.NetworkSettingsBack) > 0 {
+			rsp.NetworkSettings = rsp.NetworkSettingsBack
+			rsp.NetworkSettingsBack = nil
+		}
+		if rsp.TlsSettingsBack != nil {
+			rsp.TlsSettings = *rsp.TlsSettingsBack
+			rsp.TlsSettingsBack = nil
+		}
 		cm = &rsp.CommonNode
 		node.AnyTls = rsp
-		node.Security = Tls
+		node.Security = node.AnyTls.Tls
 	case "hysteria":
 		rsp := &HysteriaNode{}
 		err = json.Unmarshal(r.Body(), rsp)
