@@ -97,29 +97,56 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 		}
 	case panel.Reality:
 		tls.Enabled = true
-		v := info.VAllss
-		tls.ServerName = v.TlsSettings.ServerName
-		port, _ := strconv.Atoi(v.TlsSettings.ServerPort)
-		var dest string
-		if v.TlsSettings.Dest != "" {
-			dest = v.TlsSettings.Dest
-		} else {
-			dest = tls.ServerName
-		}
+		if info.Type == "anytls" {
+			v := info.AnyTls
+			tls.ServerName = v.TlsSettings.ServerName
+			port, _ := strconv.Atoi(v.TlsSettings.ServerPort)
+			var dest string
+			if v.TlsSettings.Dest != "" {
+				dest = v.TlsSettings.Dest
+			} else {
+				dest = tls.ServerName
+			}
 
-		mtd, _ := time.ParseDuration(v.RealityConfig.MaxTimeDiff)
-		tls.Reality = &option.InboundRealityOptions{
-			Enabled:    true,
-			ShortID:    []string{v.TlsSettings.ShortId},
-			PrivateKey: v.TlsSettings.PrivateKey,
-			Xver:       uint8(v.TlsSettings.Xver),
-			Handshake: option.InboundRealityHandshakeOptions{
-				ServerOptions: option.ServerOptions{
-					Server:     dest,
-					ServerPort: uint16(port),
+			mtd, _ := time.ParseDuration(v.RealityConfig.MaxTimeDiff)
+			tls.Reality = &option.InboundRealityOptions{
+				Enabled:    true,
+				ShortID:    []string{v.TlsSettings.ShortId},
+				PrivateKey: v.TlsSettings.PrivateKey,
+				Xver:       uint8(v.TlsSettings.Xver),
+				Handshake: option.InboundRealityHandshakeOptions{
+					ServerOptions: option.ServerOptions{
+						Server:     dest,
+						ServerPort: uint16(port),
+					},
 				},
-			},
-			MaxTimeDifference: badoption.Duration(mtd),
+				MaxTimeDifference: badoption.Duration(mtd),
+			}
+		} else {
+			v := info.VAllss
+			tls.ServerName = v.TlsSettings.ServerName
+			port, _ := strconv.Atoi(v.TlsSettings.ServerPort)
+			var dest string
+			if v.TlsSettings.Dest != "" {
+				dest = v.TlsSettings.Dest
+			} else {
+				dest = tls.ServerName
+			}
+
+			mtd, _ := time.ParseDuration(v.RealityConfig.MaxTimeDiff)
+			tls.Reality = &option.InboundRealityOptions{
+				Enabled:    true,
+				ShortID:    []string{v.TlsSettings.ShortId},
+				PrivateKey: v.TlsSettings.PrivateKey,
+				Xver:       uint8(v.TlsSettings.Xver),
+				Handshake: option.InboundRealityHandshakeOptions{
+					ServerOptions: option.ServerOptions{
+						Server:     dest,
+						ServerPort: uint16(port),
+					},
+				},
+				MaxTimeDifference: badoption.Duration(mtd),
+			}
 		}
 	}
 	in := option.Inbound{
