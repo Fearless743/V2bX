@@ -66,20 +66,21 @@ func (c *Controller) reportUserTrafficTask() (err error) {
 			log.WithField("tag", c.tag).Infof("Total %d online users, %d Reported", len(*onlineDevice), len(result))
 		}
 	}
-
-	CPU, Mem, Disk, Uptime, err := serverstatus.GetSystemInfo()
-	if err != nil {
-		log.Print(err)
-	}
-	err = c.apiClient.ReportNodeStatus(
-		&panel.NodeStatus{
-			CPU:    CPU,
-			Mem:    Mem,
-			Disk:   Disk,
-			Uptime: Uptime,
-		})
-	if err != nil {
-		log.Print(err)
+	if c.apiClient.PanelType == "ppanel" {
+		CPU, Mem, Disk, Uptime, err := serverstatus.GetSystemInfo()
+		if err != nil {
+			log.Print(err)
+		}
+		err = c.apiClient.ReportNodeStatus(
+			&panel.NodeStatus{
+				CPU:    CPU,
+				Mem:    Mem,
+				Disk:   Disk,
+				Uptime: Uptime,
+			})
+		if err != nil {
+			log.Print(err)
+		}
 	}
 
 	userTraffic = nil
