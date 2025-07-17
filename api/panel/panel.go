@@ -17,6 +17,7 @@ import (
 
 type Client struct {
 	client           *resty.Client
+	PanelType        string
 	APIHost          string
 	Token            string
 	NodeType         string
@@ -63,18 +64,33 @@ func New(c *conf.ApiConfig) (*Client, error) {
 		return nil, fmt.Errorf("unsupported Node type: %s", c.NodeType)
 	}
 	// set params
-	client.SetQueryParams(map[string]string{
-		"node_type": c.NodeType,
-		"node_id":   strconv.Itoa(c.NodeID),
-		"token":     c.Key,
-	})
+	switch c.PanelType {
+	case "ppanel":
+		{
+			client.SetQueryParams(map[string]string{
+				"protocol":   c.NodeType,
+				"server_id":  strconv.Itoa(c.NodeID),
+				"secret_key": c.Key,
+			})
+		}
+	default:
+		{
+			client.SetQueryParams(map[string]string{
+				"node_type": c.NodeType,
+				"node_id":   strconv.Itoa(c.NodeID),
+				"token":     c.Key,
+			})
+		}
+	}
+
 	return &Client{
-		client:   client,
-		Token:    c.Key,
-		APIHost:  c.APIHost,
-		NodeType: c.NodeType,
-		NodeId:   c.NodeID,
-		UserList: &UserListBody{},
-		AliveMap: &AliveMap{},
+		client:    client,
+		PanelType: c.PanelType,
+		Token:     c.Key,
+		APIHost:   c.APIHost,
+		NodeType:  c.NodeType,
+		NodeId:    c.NodeID,
+		UserList:  &UserListBody{},
+		AliveMap:  &AliveMap{},
 	}, nil
 }
