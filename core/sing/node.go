@@ -98,7 +98,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 	case panel.Reality:
 		tls.Enabled = true
 		if info.Type == "anytls" {
-			v := info.AnyTls
+			v := info.AnyTLS
 			tls.ServerName = v.TlsSettings.ServerName
 			port, _ := strconv.Atoi(v.TlsSettings.ServerPort)
 			var dest string
@@ -384,9 +384,9 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 	case "anytls":
 		in.Type = "anytls"
 		var paddingScheme badoption.Listable[string]
-		if info.AnyTls.PaddingScheme != nil && len(info.AnyTls.PaddingScheme) != 0 {
+		if info.AnyTLS.PaddingScheme != nil && len(info.AnyTLS.PaddingScheme) != 0 {
 			var arr []string
-			err := json.Unmarshal(info.AnyTls.PaddingScheme, &arr)
+			err := json.Unmarshal(info.AnyTLS.PaddingScheme, &arr)
 			if err == nil {
 				paddingScheme = badoption.Listable[string](arr)
 			}

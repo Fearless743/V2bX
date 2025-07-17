@@ -23,6 +23,7 @@ type rawNodeConfig struct {
 }
 
 type ApiConfig struct {
+	PanelType    string `json:"PanelType"`
 	APIHost      string `json:"ApiHost"`
 	NodeID       int    `json:"NodeID"`
 	Key          string `json:"ApiKey"`
