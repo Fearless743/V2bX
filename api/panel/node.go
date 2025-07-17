@@ -40,6 +40,12 @@ type NodeInfo struct {
 	Hysteria    *HysteriaNode
 	Hysteria2   *Hysteria2Node
 	Common      *CommonNode
+	Basic       *BasicConfig `json:"basic"`
+}
+
+type BasicConfig struct {
+	PushInterval any `json:"push_interval"`
+	PullInterval any `json:"pull_interval"`
 }
 
 type CommonNode struct {
@@ -206,8 +212,8 @@ func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
 				return nil, fmt.Errorf("decode node params error: %s", err)
 			}
 			// set interval
-			node.PushInterval = intervalToTime(node.Common.BaseConfig.PushInterval)
-			node.PullInterval = intervalToTime(node.Common.BaseConfig.PullInterval)
+			node.PushInterval = intervalToTime(node.Basic.PushInterval)
+			node.PullInterval = intervalToTime(node.Basic.PullInterval)
 			node.Type = node.Protocol
 			switch node.Protocol {
 			case "vmess", "vless":
